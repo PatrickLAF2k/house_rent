@@ -1,5 +1,6 @@
 const express = require('express');
-const { userRegister } = require('./controllers/users');
+const { userRegister, login } = require('./controllers/users');
+const tokenVerify = require('./middlewares/authentication');
 const app = express();
 
 // Middleware
@@ -7,5 +8,8 @@ app.use(express.json());
 
 // Rotas
 app.post('/register', userRegister );
+app.post('/login', login );
 
-module.exports = app; // Exporta o app para ser usado em outro arquivo
+app.use(tokenVerify)
+
+module.exports = app;
