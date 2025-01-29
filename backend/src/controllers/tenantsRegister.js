@@ -41,10 +41,10 @@ const tenantsRegister = async (req, res) => {
         }
 
         // Inserção de novo usuário
-        const newUser = await pool.query('INSERT INTO tenants (name, cpf, email, phone, date_of_birth, rg, address, address_number, neighborhood, municipality, state, zip_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING * ',
+        const newTenant = await pool.query('INSERT INTO tenants (name, cpf, email, phone, date_of_birth, rg, address, address_number, neighborhood, municipality, state, zip_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING * ',
             [name, encryptedCpf, email, phone, date_of_birth, encryptedRg, address, address_number, neighborhood, municipality, state, zip_code])
 
-        return res.status(201).json(newUser.rows[0]);
+        return res.status(201).json(newTenant.rows[0]);
 
     } catch (error) {
         return res.status(500).json({ mensagem: `Erro interno do servidor (${error})` });
