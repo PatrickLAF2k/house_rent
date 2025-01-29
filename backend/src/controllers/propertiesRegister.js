@@ -1,5 +1,4 @@
 const pool = require("../config/database")
-const { encrypt, decrypt } = require("../config/encryption")
 
 // Função para verificar campos obrigatórios
 const checkRequiredFields = (fields) => {
