@@ -12,12 +12,14 @@ const userlogin = async (req, res) => {
         return res.status(400).json({ mensagem: "Email e senha são obrigatórios" });
     }
 
+    // Verificação de email existente
     try {
         const userVerify = await pool.query("SELECT * from owners where email = $1", [email])
         if (userVerify.rowCount < 1) {
             return res.status(400).json({ mensagem: "Email ou senha incorretos" })
         }
 
+        //Verificação de senha e gera o token de autenticação
         const passwordVerify = await bcrypt.compare(password, userVerify.rows[0].password)
         if (!passwordVerify) {
             return res.status(400).json({ mensagem: "Email ou senha incorretos" })
