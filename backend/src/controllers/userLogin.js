@@ -6,6 +6,12 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES_IN
 
 const userlogin = async (req, res) => {
     const { email, password } = req.body;
+
+    // Verificação de campos obrigatórios
+    if (!email || !password) {
+        return res.status(400).json({ mensagem: "Email e senha são obrigatórios" });
+    }
+
     try {
         const userVerify = await pool.query("SELECT * from owners where email = $1", [email])
         if (userVerify.rowCount < 1) {
@@ -26,11 +32,9 @@ const userlogin = async (req, res) => {
         }
 
     } catch (error) {
-        return res.status(500).json({ mensagem: `Erro interno do servidor (${error})` });
+        return res.status(500).json({ mensagem: `Erro interno do servidor (${error.message})` });
     }
 }
-
-
 module.exports = {
     userlogin
 }
