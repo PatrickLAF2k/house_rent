@@ -15,6 +15,7 @@ CREATE TABLE
 CREATE TABLE
     tenants (
         id SERIAL PRIMARY KEY,
+        owner_id INT NOT NULL REFERENCES owners (id),
         name VARCHAR(255) NOT NULL,
         cpf VARCHAR(70) UNIQUE NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
