@@ -1,5 +1,5 @@
 const express = require('express');
-const tokenVerify = require('./middlewares/authentication');
+const authenticateToken = require('./middlewares/authentication');
 const { userRegister } = require('./controllers/userRegister');
 const { userlogin } = require('./controllers/userLogin');
 const { tenantsRegister } = require('./controllers/tenantsRegister');
@@ -13,7 +13,7 @@ app.use(express.json());
 app.post('/register', userRegister);
 app.post('/login', userlogin);
 
-app.use(tokenVerify)
+app.use(authenticateToken)
 app.post('/tenants/register', tenantsRegister);
 app.post('/properties/register', propertiesRegister);
 
