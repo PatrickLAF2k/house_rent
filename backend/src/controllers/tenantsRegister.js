@@ -13,14 +13,12 @@ const checkRequiredFields = (fields) => {
 
 const tenantsRegister = async (req, res) => {
     // Obtém o ID do usuário logado a partir do token
-    const owner_id = req.user.id; 
-    
-    
+    const owner_id = req.user.id;
 
-    const { name, cpf, email, phone, date_of_birth, rg, address, address_number, neighborhood, municipality, state, zip_code } = req.body;
+    const { name, nationality, marital_status, date_of_birth, rg, issuing_authority, cpf, email, phone, address, address_number, neighborhood, municipality, state, zip_code } = req.body;
 
     // Verificação de campos obrigatórios
-    if (!checkRequiredFields({name, cpf, email, phone, date_of_birth, rg, address, address_number, neighborhood, municipality, state, zip_code })) {
+    if (!checkRequiredFields({ name, nationality, marital_status, date_of_birth, rg, issuing_authority, cpf, email, phone, address, address_number, neighborhood, municipality, state, zip_code })) {
         return res.status(400).json({ mensagem: `Todos os campos são obrigatórios` });
     }
 
@@ -47,8 +45,8 @@ const tenantsRegister = async (req, res) => {
 
         // Inserção de novo inquilino
         const newTenant = await pool.query(
-            "INSERT INTO tenants (owner_id, name, cpf, email, phone, date_of_birth, rg, address, address_number, neighborhood, municipality, state, zip_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
-            [owner_id, name, encryptedCpf, email, phone, date_of_birth, encryptedRg, address, address_number, neighborhood, municipality, state, zip_code]
+            "INSERT INTO tenants (owner_id, name, nationality, marital_status, date_of_birth, rg, issuing_authority, cpf, email, phone, address, address_number, neighborhood, municipality, state, zip_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id, name, email",
+            [owner_id, name, nationality, marital_status, date_of_birth, encryptedRg, issuing_authority, encryptedCpf, email, phone, address, address_number, neighborhood, municipality, state, zip_code]
         );
 
         return res.status(201).json({ mensagem: "Inquilino cadastrado com sucesso", inquilino: newTenant.rows[0] });
