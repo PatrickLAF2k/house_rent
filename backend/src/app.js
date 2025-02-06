@@ -5,13 +5,14 @@ const { userlogin } = require('./controllers/userLogin');
 const { tenantsRegister } = require('./controllers/tenantsRegister');
 const { propertiesRegister } = require('./controllers/propertiesRegister');
 const { contractRegister } = require('./controllers/contractRegister');
+const validateUser = require('./middlewares/validateUser');
 const app = express();
 
 // Middleware
 app.use(express.json());
 
 // Rotas
-app.post('/register', userRegister);
+app.post('/register', validateUser, userRegister);
 app.post('/login', userlogin);
 
 app.use(authenticateToken)
