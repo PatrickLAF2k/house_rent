@@ -1,25 +1,11 @@
 const pool = require("../config/database")
 const bcrypt = require('bcrypt');
-const { encrypt, decrypt } = require("../config/encryption")
-
-// Função para verificar campos obrigatórios
-const checkRequiredFields = (fields) => {
-    for (const field in fields) {
-        if (!fields[field]) {
-            return false;
-        }
-    }
-    return true;
-}
+const { encrypt } = require("../config/encryption")
 
 const userRegister = async (req, res) => {
     const { name, nationality, marital_status, occupation, date_of_birth, rg, issuing_authority, cpf, email, phone, password } = req.body;
 
     try {
-        // Verificação de campos obrigatórios
-        if (!checkRequiredFields({ name, nationality, marital_status, occupation, date_of_birth, rg, issuing_authority, cpf, email, phone, password })) {
-            return res.status(400).json({ mensagem: `Todos os campos são obrigatórios` });
-        }
 
         // Verificação de email existente
         const existingEmail = await pool.query("SELECT * FROM owners WHERE email = $1", [email]);
