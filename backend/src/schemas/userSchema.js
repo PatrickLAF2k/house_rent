@@ -33,9 +33,9 @@ const userSchema = Joi.object({
         'any.required': `Todos os campos são obrigatórios`
     }),
 
-    date_of_birth: Joi.date().iso().required().messages({
-        'date.base': `Data de nascimento inválida`,
-        'date.format': `A data de nascimento deve estar no formato ISO (DD-MM-AAAA)`,
+    date_of_birth: Joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).required().messages({
+        'string.empty': `Data de nascimento não pode estar vazia`,
+        'string.pattern.base': `A data de nascimento deve estar no formato (DD/MM/AAAA)`,
         'any.required': `Todos os campos são obrigatórios`
     }),
 
