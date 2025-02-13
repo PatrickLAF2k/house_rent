@@ -9,6 +9,7 @@ const { propertiesRegister } = require('./controllers/propertiesRegister');
 const { contractRegister } = require('./controllers/contractRegister');
 const validateUser = require('./middlewares/validateUser');
 const validateLogin = require('./middlewares/validateLogin');
+const validateTenants = require('./middlewares/validateTenants');
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.post('/login', validateLogin, userlogin);
 
 app.use(authenticateToken)
 
-app.post('/tenants/register', tenantsRegister);
+app.post('/tenants/register', validateTenants, tenantsRegister);
 app.post('/properties/register', propertiesRegister);
 app.post('/contract/register', contractRegister);
 
