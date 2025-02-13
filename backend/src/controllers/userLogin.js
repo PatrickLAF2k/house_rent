@@ -7,11 +7,6 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES_IN
 const userlogin = async (req, res) => {
     const { email, password } = req.body;
 
-    // Verificação de campos obrigatórios
-    if (!email || !password) {
-        return res.status(400).json({ mensagem: "Email e senha são obrigatórios" });
-    }
-
     // Verificação de email existente
     try {
         const userVerify = await pool.query("SELECT * from owners where email = $1", [email])
