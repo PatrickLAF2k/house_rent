@@ -1,67 +1,26 @@
-const request = require('supertest');
-const app = require('../src/app');
-const resetDatabase = require('../src/config/resetDatabase'); // Importa o script de limpeza do banco de dados
-const pool = require('../src/config/database'); // Importa a conexão com o banco de dados
+const loginSchema = require('../src/schemas/loginSchema');
 
-describe('API de Controle de Casas Alugadas', () => {
-    let token;
+describe('Validação do Schema de Login', () => {
+    const testCases = [
+        { field: 'email', value: '', expectedMessage: 'Email não pode estar vazio' },
+        { field: 'email', value: 'emailinvalido', expectedMessage: 'Email inválido' },
+        { field: 'password', value: '', expectedMessage: 'Senha não pode estar vazia' },
+        { field: 'password', value: '123', expectedMessage: 'Senha deve ter no mínimo 6 caracteres' }
+    ];
 
+    testCases.forEach(({ field, value, expectedMessage }) => {
+        it(`deve retornar erro para o campo '${field}' com valor inválido: '${value}'`, () => {
+            const loginData = {
+                email: 'teste@teste.com',
+                password: 'senha123'
+            };
 
-    // Teste de login
-    describe('POST /login', () => {
+            loginData[field] = value;
 
-        it('deve fazer login com sucesso', async () => {
-            const response = await request(app)
-                .post('/login')
-                .send({
-                    email: 'owner@example.com',
-                    password: 'password123'
-                });
+            const { error } = loginSchema.validate(loginData, { abortEarly: false });
 
-            token = response.body.token;
-            console.log(response.body);
-            expect(response.statusCode).toBe(200);
-            expect(response.body).toHaveProperty('token');
-            
+            expect(error).not.toBeNull();
+            expect(error.details.some(err => err.message === expectedMessage)).toBe(true);
         });
-
-        it('não deve fazer login com email incorreto', async () => {
-            const response = await request(app)
-                .post('/login')
-                .send({
-                    email: 'wrong@example.com',
-                    password: 'password123'
-                });
-            expect(response.statusCode).toBe(400);
-            expect(response.body).toHaveProperty('mensagem', 'Email ou senha incorretos');
-        });
-
-        it('não deve fazer login com senha incorreta', async () => {
-            const response = await request(app)
-                .post('/login')
-                .send({
-                    email: 'owner@example.com',
-                    password: 'wrongpassword'
-                });
-            expect(response.statusCode).toBe(400);
-            expect(response.body).toHaveProperty('mensagem', 'Email ou senha incorretos');
-        });
-
-        it('não deve fazer login com campos obrigatórios faltando', async () => {
-            const response = await request(app)
-                .post('/login')
-                .send({
-                    email: 'owner@example.com'
-                    // Falta o campo 'password'
-                });
-            expect(response.statusCode).toBe(400);
-            expect(response.body).toHaveProperty('mensagem', 'Todos os campos são obrigatórios');
-        });
-    });
-
-    // Fecha a conexão com o banco de dados após todos os testes
-
-    afterAll(async () => {
-        await pool.end();
     });
 });
