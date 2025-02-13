@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const userSchema = require('../schemas/userSchema');
 
 const validateUser = async (req, res, next) => {
