@@ -1,26 +1,12 @@
 const pool = require("../config/database");
 const { encrypt } = require("../config/encryption");
 
-// Função para verificar campos obrigatórios
-const checkRequiredFields = (fields) => {
-    for (const field in fields) {
-        if (!fields[field]) {
-            return false;
-        }
-    }
-    return true;
-}
-
 const tenantsRegister = async (req, res) => {
     // Obtém o ID do usuário logado a partir do token
     const owner_id = req.user.id;
 
     const { name, nationality, marital_status, date_of_birth, rg, issuing_authority, cpf, email, phone, address, address_number, neighborhood, municipality, state, zip_code } = req.body;
 
-    // Verificação de campos obrigatórios
-    if (!checkRequiredFields({ name, nationality, marital_status, date_of_birth, rg, issuing_authority, cpf, email, phone, address, address_number, neighborhood, municipality, state, zip_code })) {
-        return res.status(400).json({ mensagem: `Todos os campos são obrigatórios` });
-    }
 
     try {
         // Verificação de email existente
