@@ -1,4 +1,8 @@
+const request = require('supertest');
+const app = require('../src/app');
 const userSchema = require('../src/schemas/userSchema');
+const reset = require('../src/config/resetDatabase');
+const pool = require('../src/config/database');
 
 describe('Validação do Schema de Usuário', () => {
     const testCases = [
@@ -49,8 +53,48 @@ describe('Validação do Schema de Usuário', () => {
 
             const { error } = userSchema.validate(userData, { abortEarly: false });
 
-            expect(error).not.toBeNull();
-            expect(error.details.some(err => err.message === expectedMessage)).toBe(true);
+            if (!error) {
+                throw new Error(`Esperava erro para o campo '${field}', mas a validação passou.`);
+            }
+
+            const messages = error.details.map(err => err.message);
+            expect(messages).toContain(expectedMessage);
         });
+    });
+});
+
+describe('Cadastro de Usuário - Teste da Rota Real', () => {
+
+    beforeAll(async () => {
+        await reset();
+    });
+
+    it('deve cadastrar com sucesso quando todos os campos são válidos', async () => {
+        const userData = {
+            name: 'Usuário Válido',
+            nationality: 'Brasileiro',
+            marital_status: 'Solteiro',
+            occupation: 'Engenheiro',
+            date_of_birth: '10/10/2000',
+            rg: '1234567',
+            issuing_authority: 'SSP',
+            cpf: '12345678901',
+            email: 'email@teste.com',
+            phone: '11999999999',
+            password: 'senha123'
+        };
+
+        const response = await request(app)
+
+            .post('/register')
+            .send(userData);
+
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty('mensagem', 'Usuário cadastrado com sucesso');
+        expect(response.body).toHaveProperty('usuario');
+    });
+
+    afterAll(async () => {
+        await pool.end();
     });
 });
