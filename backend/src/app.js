@@ -4,7 +4,7 @@ const authenticateToken = require('./middlewares/authentication');
 //Rotas
 const { userRegister } = require('./controllers/userRegister.controller');
 const { userlogin } = require('./controllers/userLogin.controller');
-const { tenantsRegister } = require('./controllers/tenantsRegister');
+const { tenantsRegister } = require('./controllers/tenantsRegister.controller');
 const { propertiesRegister } = require('./controllers/propertiesRegister');
 const { contractRegister } = require('./controllers/contractRegister');
 const validateUser = require('./middlewares/validateUser');
