@@ -1,5 +1,6 @@
 const Register = require("../models/register.model.js");
 const AutheService = require("../config/authServices.js");
+const bcrypt = require('bcrypt');
 
 
 const userlogin = async (req, res) => {
