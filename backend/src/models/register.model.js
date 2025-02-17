@@ -1,5 +1,4 @@
 const pool = require("../config/database")
-const bcrypt = require('bcrypt');
 const { encrypt } = require("../config/encryption")
 
 class Register {
