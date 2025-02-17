@@ -24,7 +24,7 @@ const userRegister = async (req, res) => {
             return res.status(409).json({ mensagem: `RG já cadastrado` });
         }
 
-        // Criptografar a senha
+        // Criptografar senha, RG e CPF
         const passwordHash = await bcrypt.hash(password, 10);
         const encryptedRg = encrypt(rg);
         const encryptedCpf = encrypt(cpf);
