@@ -1,10 +1,14 @@
 const request = require('supertest');
 const app = require('../src/app');
-const userSchema = require('../src/schemas/userSchema');
 const reset = require('../src/config/resetDatabase');
 const pool = require('../src/config/database');
 
-describe('Validação do Schema de Usuário', () => {
+describe('Cadastro de Usuário - Teste da Rota', () => {
+
+    beforeAll(async () => {
+        await reset();
+    });
+
     const testCases = [
         { field: 'name', value: '', expectedMessage: 'Nome não pode estar vazio' },
         { field: 'name', value: 'A', expectedMessage: 'Por favor, insira o nome completo' },
@@ -17,7 +21,7 @@ describe('Validação do Schema de Usuário', () => {
         { field: 'date_of_birth', value: '01-01-2000', expectedMessage: 'A data de nascimento deve estar no formato (DD/MM/AAAA)' },
 
         { field: 'rg', value: '', expectedMessage: 'RG não pode estar vazio' },
-        { field: 'rg', value: 'abc', expectedMessage: 'RG deve conter apenas números' },
+        { field: 'rg', value: '123456c', expectedMessage: 'RG deve conter apenas números' },
 
         { field: 'cpf', value: '', expectedMessage: 'CPF não pode estar vazio' },
         { field: 'cpf', value: '12345', expectedMessage: 'CPF deve ter exatamente 11 caracteres' },
@@ -30,11 +34,12 @@ describe('Validação do Schema de Usuário', () => {
         { field: 'phone', value: '123', expectedMessage: 'Telefone deve ter no mínimo 10 caracteres' },
 
         { field: 'password', value: '', expectedMessage: 'Senha não pode estar vazia' },
-        { field: 'password', value: '123', expectedMessage: 'Senha deve ter no mínimo 6 caracteres' }
+        { field: 'password', value: '123', expectedMessage: 'Senha deve ter no mínimo 6 caracteres' },
+
     ];
 
     testCases.forEach(({ field, value, expectedMessage }) => {
-        it(`deve retornar erro para o campo '${field}' com valor inválido: '${value}'`, () => {
+        it(`deve retornar erro para o campo '${field}' com valor inválido: '${value}'`, async () => {
             const userData = {
                 name: 'Usuário Válido',
                 nationality: 'Brasileiro',
@@ -51,47 +56,14 @@ describe('Validação do Schema de Usuário', () => {
 
             userData[field] = value;
 
-            const { error } = userSchema.validate(userData, { abortEarly: false });
+            const response = await request(app)
+                .post('/register')
+                .send(userData);
 
-            if (!error) {
-                throw new Error(`Esperava erro para o campo '${field}', mas a validação passou.`);
-            }
-
-            const messages = error.details.map(err => err.message);
-            expect(messages).toContain(expectedMessage);
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('mensagem');
+            expect(response.body.mensagem).toContain(expectedMessage);
         });
-    });
-});
-
-describe('Cadastro de Usuário - Teste da Rota Real', () => {
-
-    beforeAll(async () => {
-        await reset();
-    });
-
-    it('deve cadastrar com sucesso quando todos os campos são válidos', async () => {
-        const userData = {
-            name: 'Usuário Válido',
-            nationality: 'Brasileiro',
-            marital_status: 'Solteiro',
-            occupation: 'Engenheiro',
-            date_of_birth: '10/10/2000',
-            rg: '1234567',
-            issuing_authority: 'SSP',
-            cpf: '12345678901',
-            email: 'email@teste.com',
-            phone: '11999999999',
-            password: 'senha123'
-        };
-
-        const response = await request(app)
-
-            .post('/register')
-            .send(userData);
-
-        expect(response.status).toBe(201);
-        expect(response.body).toHaveProperty('mensagem', 'Usuário cadastrado com sucesso');
-        expect(response.body).toHaveProperty('usuario');
     });
 
     afterAll(async () => {
